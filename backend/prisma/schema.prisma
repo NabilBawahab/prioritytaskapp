@@ -13,3 +13,38 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  username String
+  password String
+  createdAt DateTime @default(now())
+  tasks Task[]
+}
+
+model Task {
+  id String @id @default(cuid())
+  title String
+  description String?
+  priority Priority
+  status TaskStatus
+  dueDate DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId String 
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum Priority {
+  FIRST
+  SECOND
+  THIRD
+  FOURTH
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
