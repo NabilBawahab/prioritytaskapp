@@ -1,3 +1,30 @@
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login user dan dapatkan token JWT
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Login sukses dan token dikembalikan
+ *       401:
+ *         description: Credential tidak valid
+ */
+
 import type { Request, Response } from "express";
 import { prisma } from "../utils/prisma";
 import bcrypt from "bcrypt";

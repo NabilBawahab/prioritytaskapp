@@ -1,3 +1,33 @@
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     summary: Register user baru
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - username
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Registrasi berhasil
+ *       409:
+ *         description: Email sudah terdaftar
+ */
+
 import type { Request, Response } from "express";
 import { prisma } from "../utils/prisma";
 import bcrypt from "bcrypt";
