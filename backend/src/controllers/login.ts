@@ -73,5 +73,12 @@ export const loginAction = async (
         token,
       },
     });
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error user login", error);
+    res.status(500);
+    res.json({
+      status: res.statusCode,
+      message: "Something wrong during login",
+    });
+  }
 };

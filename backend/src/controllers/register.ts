@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import { prisma } from "../utils/prisma";
 import bcrypt from "bcrypt";
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export const registerAction = async (req: Request, res: Response) => {
   const { email, username, password } = req.body ?? {};
   console.log(email, username, password);
@@ -13,6 +15,14 @@ export const registerAction = async (req: Request, res: Response) => {
       message: "Please fill all fields",
     });
     return;
+  }
+
+  if (!emailRegex.test(email)) {
+    res.status(400);
+    res.json({
+      status: res.statusCode,
+      message: "Invalid email format",
+    });
   }
 
   try {
