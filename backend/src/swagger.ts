@@ -7,7 +7,7 @@ export const swaggerSpec = swaggerJSDoc({
       title: "Priority Task App",
       version: "1.0.0",
     },
-    servers: [{ url: `${process.env.URL_DEVELOPMENT}/api` }],
+    servers: [{ url: `${process.env.URL_SWAGGER}/api` }],
   },
   components: {
     securitySchemes: {
