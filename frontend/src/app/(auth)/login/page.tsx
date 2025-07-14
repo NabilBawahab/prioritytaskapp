@@ -15,6 +15,7 @@ export default function Home() {
       <form className="flex flex-col" action={formAction}>
         <input placeholder="Input your email" name="email" />
         <input placeholder="Input your password" name="password" />
+        <input type="datetime-local" name="date" />
         <button type="submit">Login</button>
       </form>
     </>
