@@ -1,18 +1,3 @@
-/**
- * @swagger
- * /profile:
- *   get:
- *     summary: Ambil data user dan semua task miliknya
- *     tags: [User]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Data user dan list task
- *       401:
- *         description: Unauthorized (token tidak ada/invalid)
- */
-
 import type { Request, Response } from "express";
 import { prisma } from "../utils/prisma";
 

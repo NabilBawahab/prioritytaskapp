@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /auth/login:
+ * /login:
  *   post:
  *     summary: Login user dan dapatkan token JWT
  *     tags: [Auth]
