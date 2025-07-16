@@ -1,13 +1,35 @@
 "use server";
 
-import { login } from "@/api/api";
+import { loginAxios } from "@/api/api";
+import { LoginResponse } from "@/type/type";
+import { cookies } from "next/headers";
 
 export async function loginAction(_: any, formData: FormData) {
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const date = formData.get("date");
+  const cookieStore = await cookies();
 
-  const utcDate = new Date(date as string);
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
 
-  console.log({ email, password, date, utcDate });
+  try {
+    const response = await loginAxios({ email, password });
+    if (response.data.status === 200) {
+      const token = response.data.data?.token;
+      cookieStore.set("token", token || "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: true,
+      });
+
+      return {
+        success: true,
+        message: response.data.message,
+      };
+    }
+  } catch (error: any) {
+    console.log(error.message);
+    return {
+      success: false,
+      message: error.message,
+    };
+  }
 }
