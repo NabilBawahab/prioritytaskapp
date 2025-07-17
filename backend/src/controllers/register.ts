@@ -36,7 +36,6 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const registerAction = async (req: Request, res: Response) => {
   const { email, username, password } = req.body ?? {};
-  console.log(email, username, password);
 
   if (!email || !username || !password) {
     res.status(406);
@@ -47,12 +46,22 @@ export const registerAction = async (req: Request, res: Response) => {
     return;
   }
 
+  if (password.length < 8) {
+    res.status(406);
+    res.json({
+      status: res.statusCode,
+      message: "Password must be at least 8 characters long",
+    });
+    return;
+  }
+
   if (!emailRegex.test(email)) {
     res.status(400);
     res.json({
       status: res.statusCode,
       message: "Invalid email format",
     });
+    return;
   }
 
   try {
