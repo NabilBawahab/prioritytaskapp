@@ -20,3 +20,20 @@ export type RegisterResponse = {
   status: number;
   message: string;
 };
+
+export type ProfileResponse = {
+  status: number;
+  username: string;
+  email: string;
+  data?: {
+    id: string;
+    createdAt: Date;
+    title: string;
+    description: string | null;
+    priority: string;
+    status: string;
+    dueDate: Date;
+    updatedAt: Date;
+    userId: string;
+  };
+};
