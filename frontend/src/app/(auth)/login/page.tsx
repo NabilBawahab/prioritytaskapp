@@ -3,12 +3,14 @@
 import { useActionState, useEffect, useState } from "react";
 import { loginAction } from "./action";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function Page() {
+  const searchParams = useSearchParams();
   const [state, formAction, pending] = useActionState(loginAction, null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const isRegistered = searchParams.get("success") === "true";
 
   const router = useRouter();
 
@@ -16,13 +18,18 @@ export default function Page() {
     if (state?.success) {
       router.push("/dashboard");
     }
-  }, [state]);
+  }, [state, router]);
 
   return (
     <div className="w-full max-w-xs border p-6 rounded-xl shadow-md border-slate-300 space-y-6">
       <section className="text-center space-y-3">
         <h1 className="font-semibold">Login</h1>
         <p>Sign in to continue</p>
+        {isRegistered && (
+          <div className="bg-green-400 text-white rounded-lg py-2 px-2">
+            Registration successful!
+          </div>
+        )}
       </section>
       <form className="flex flex-col gap-4" action={formAction}>
         <input

@@ -17,7 +17,7 @@ export default function Page() {
 
   useEffect(() => {
     if (state?.success) {
-      router.push("/login");
+      router.push("/login?success=true");
     }
   }, [state]);
 
