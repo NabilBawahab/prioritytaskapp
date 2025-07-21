@@ -59,7 +59,7 @@ export default function Page() {
           type="password"
         />
         <button
-          className="rounded-xl py-2 px-4 mt-2 bg-blue-500 text-white hover:bg-blue-600 hover:cursor-pointer transition-colors duration-500"
+          className="rounded-xl py-2 px-4 mt-2 bg-blue-500 text-white hover:bg-blue-600 hover:cursor-pointer transition-colors duration-500 active:bg-amber-800"
           type="submit"
           disabled={pending}
         >
