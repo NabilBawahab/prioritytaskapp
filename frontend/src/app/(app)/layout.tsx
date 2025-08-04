@@ -1,6 +1,8 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import LayoutClient from "./layout-client";
+import { SidebarProvider } from "@/components/ui/sidebar";
+
+import { AppSidebar } from "@/components/app-sidebar";
 
 export default async function Layout({
   children,
@@ -14,5 +16,12 @@ export default async function Layout({
   }
 
   // console.log("User data:", user);
-  return <LayoutClient user={user}>{children}</LayoutClient>;
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <main className="flex-1 overflow-hidden">{children}</main>
+      </div>
+    </SidebarProvider>
+  );
 }

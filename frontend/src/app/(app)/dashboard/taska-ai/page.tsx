@@ -1,3 +1,5 @@
+import TaskaUi from "./_components/taska-ui";
+
 export default function Page() {
-  return <div>Under development</div>;
+  return <TaskaUi />;
 }
