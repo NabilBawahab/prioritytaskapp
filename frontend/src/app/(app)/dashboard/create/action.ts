@@ -36,7 +36,12 @@ export async function createTaskAction(_: any, formData: FormData) {
   try {
     const res: AxiosResponse<LoginResponse> = await api.post(
       "/user/create",
-      tasks,
+      tasks.map((task) => {
+        return {
+          ...task,
+          dueDate: new Date(task.dueDate).toISOString(),
+        };
+      }),
       {
         headers: { Authorization: `Bearer ${token}` },
       },
@@ -46,5 +51,11 @@ export async function createTaskAction(_: any, formData: FormData) {
   } catch (error) {
     const axiosError = error as AxiosError<ErrorResponse>;
     console.error("Create task error", axiosError.response?.data.message);
+    return {
+      success: false,
+      message:
+        axiosError.response?.data.message ||
+        "An error occured during create task",
+    };
   }
 }
