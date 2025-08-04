@@ -15,11 +15,11 @@ export function SidebarItem({
     <Link href={href} className="block">
       <div
         className={`
-          flex gap-2 px-2 py-1 rounded-xl ${
-            active
-              ? "bg-blue-500 text-white transition-colors duration-300"
-              : "hover:bg-gray-100 transition-colors duration-300"
-          }
+         text-slate-800 flex gap-2 px-4 py-2 rounded-xl min-w-40 ${
+           active
+             ? "bg-blue-500 text-white transition-colors duration-300"
+             : "hover:bg-gray-100 transition-colors duration-300"
+         }
         `}
       >
         <span>{icon}</span>

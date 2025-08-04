@@ -37,3 +37,11 @@ export type ProfileResponse = {
     userId: string;
   };
 };
+
+export type CreateTaskInput = {
+  title: string;
+  description: string;
+  priority: string;
+  status: string;
+  dueDate: string;
+};
