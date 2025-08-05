@@ -40,7 +40,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { ProfileResponse, Task } from "@/type/type";
+import type { Task } from "@/type/type";
 
 interface TaskDummy {
   id: number;
@@ -54,12 +54,12 @@ interface TaskDummy {
   completed: boolean;
 }
 
-export function TaskList({ data }: { data: Task }) {
+export function TaskList({ tasks }: { tasks: Task }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [priorityFilter, setPriorityFilter] = useState("all");
 
-  const [tasks, setTasks] = useState<TaskDummy[]>([
+  const [dummyTasks, setDummyTask] = useState<TaskDummy[]>([
     {
       id: 1,
       title: "Design new landing page",
@@ -135,8 +135,8 @@ export function TaskList({ data }: { data: Task }) {
   ]);
 
   const toggleTaskCompletion = (taskId: number) => {
-    setTasks(
-      tasks.map((task) =>
+    setDummyTask(
+      dummyTasks.map((task) =>
         task.id === taskId
           ? {
               ...task,
@@ -151,20 +151,20 @@ export function TaskList({ data }: { data: Task }) {
   const filteredTasks = tasks.filter((task) => {
     const matchesSearch =
       task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      task.description.toLowerCase().includes(searchTerm.toLowerCase());
+      task.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
-      statusFilter === "all" || task.status === statusFilter;
+      statusFilter === "ALL" || task.status === statusFilter;
     const matchesPriority =
-      priorityFilter === "all" || task.priority === priorityFilter;
+      priorityFilter === "ALL" || task.priority === priorityFilter;
 
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "completed":
+      case "DONE":
         return <CheckCircle className="h-4 w-4 text-green-600" />;
-      case "in-progress":
+      case "IN_PROGRESS":
         return <Clock className="h-4 w-4 text-yellow-600" />;
       case "overdue":
         return <AlertCircle className="h-4 w-4 text-red-600" />;
@@ -177,14 +177,14 @@ export function TaskList({ data }: { data: Task }) {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case "urgent":
+      case "FIRST":
         return "destructive";
-      case "high":
+      case "SECOND":
         return "destructive";
-      case "medium":
-        return "default";
-      case "low":
+      case "THIRD":
         return "secondary";
+      case "FOURTH":
+        return "outline";
       default:
         return "outline";
     }
@@ -192,9 +192,9 @@ export function TaskList({ data }: { data: Task }) {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed":
+      case "DONE":
         return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
-      case "in-progress":
+      case "IN_PROGRESS":
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
       case "overdue":
         return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
@@ -250,10 +250,10 @@ export function TaskList({ data }: { data: Task }) {
                   <SelectValue placeholder="Filter by status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="todo">To Do</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="ALL">All Status</SelectItem>
+                  <SelectItem value="TODO">To Do</SelectItem>
+                  <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                  <SelectItem value="DONE">Completed</SelectItem>
                   <SelectItem value="overdue">Overdue</SelectItem>
                 </SelectContent>
               </Select>
@@ -264,11 +264,11 @@ export function TaskList({ data }: { data: Task }) {
                   <SelectValue placeholder="Filter by priority" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Priority</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="ALL">All Priority</SelectItem>
+                  <SelectItem value="FIRST">First priority</SelectItem>
+                  <SelectItem value="SECOND">Second priority</SelectItem>
+                  <SelectItem value="THIRD">Third priority</SelectItem>
+                  <SelectItem value="FOURTH">Fourth priority</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -301,7 +301,7 @@ export function TaskList({ data }: { data: Task }) {
                     Completed
                   </p>
                   <p className="text-2xl font-bold">
-                    {tasks.filter((t) => t.completed).length}
+                    {tasks.filter((task) => task.status === "DONE").length}
                   </p>
                 </div>
                 <div className="h-8 w-8 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
@@ -319,7 +319,10 @@ export function TaskList({ data }: { data: Task }) {
                     In Progress
                   </p>
                   <p className="text-2xl font-bold">
-                    {tasks.filter((t) => t.status === "in-progress").length}
+                    {
+                      tasks.filter((task) => task.status === "IN_PROGRESS")
+                        .length
+                    }
                   </p>
                 </div>
                 <div className="h-8 w-8 bg-yellow-100 dark:bg-yellow-900/20 rounded-full flex items-center justify-center">
@@ -337,7 +340,11 @@ export function TaskList({ data }: { data: Task }) {
                     Overdue
                   </p>
                   <p className="text-2xl font-bold">
-                    {tasks.filter((t) => t.status === "overdue").length}
+                    {
+                      tasks.filter(
+                        (task) => new Date(task.dueDate) < new Date(),
+                      ).length
+                    }
                   </p>
                 </div>
                 <div className="h-8 w-8 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
@@ -365,17 +372,17 @@ export function TaskList({ data }: { data: Task }) {
                   key={task.id}
                   className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
-                  <Checkbox
+                  {/* <Checkbox
                     checked={task.completed}
                     onCheckedChange={() => toggleTaskCompletion(task.id)}
-                  />
+                  /> */}
 
                   <div className="flex-1 space-y-2">
                     <div className="flex items-center gap-2">
                       {getStatusIcon(task.status)}
                       <h3
                         className={`font-medium ${
-                          task.completed
+                          task.status === "DONE"
                             ? "line-through text-muted-foreground"
                             : ""
                         }`}
@@ -403,7 +410,7 @@ export function TaskList({ data }: { data: Task }) {
                         {task.status.replace("-", " ")}
                       </Badge>
 
-                      {task.tags.map((tag) => (
+                      {/* {task.tags.map((tag) => (
                         <Badge
                           key={tag}
                           variant="secondary"
@@ -411,7 +418,7 @@ export function TaskList({ data }: { data: Task }) {
                         >
                           {tag}
                         </Badge>
-                      ))}
+                      ))} */}
                     </div>
 
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
