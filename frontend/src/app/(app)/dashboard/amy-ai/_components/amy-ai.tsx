@@ -33,7 +33,7 @@ interface Message {
   timestamp: string;
 }
 
-export default function TaskaUi() {
+export function AmyUi() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,

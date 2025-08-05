@@ -15,11 +15,11 @@ export default async function Layout({
     redirect("/login");
   }
 
-  // console.log("User data:", user);
+  console.log("User data:", user);
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        <AppSidebar />
+        <AppSidebar user={user} />
         <main className="flex-1 overflow-hidden">{children}</main>
       </div>
     </SidebarProvider>

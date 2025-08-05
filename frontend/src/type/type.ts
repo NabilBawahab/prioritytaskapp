@@ -35,7 +35,7 @@ export type ProfileResponse = {
     dueDate: Date;
     updatedAt: Date;
     userId: string;
-  };
+  }[];
 };
 
 export type CreateTaskInput = {

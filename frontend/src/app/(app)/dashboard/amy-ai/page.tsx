@@ -1,5 +1,5 @@
-import TaskaUi from "./_components/taska-ui";
+import { AmyUi } from "./_components/amy-ai";
 
 export default function Page() {
-  return <TaskaUi />;
+  return <AmyUi />;
 }

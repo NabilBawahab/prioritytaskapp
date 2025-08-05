@@ -7,6 +7,8 @@ import {
   Bot,
   Moon,
   Sun,
+  Power,
+  Ghost,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -27,6 +29,8 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ProfileResponse } from "@/type/type";
+import { logout } from "@/actions/logout";
 
 const menuItems = [
   {
@@ -56,7 +60,7 @@ const menuItems = [
   },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ user }: { user: ProfileResponse }) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
 
@@ -105,12 +109,17 @@ export function AppSidebar() {
           <div className="flex items-center gap-2">
             <Avatar className="h-8 w-8">
               <AvatarImage src="/placeholder.svg?height=32&width=32" />
-              <AvatarFallback>JD</AvatarFallback>
+              <AvatarFallback>
+                {user.username
+                  .split(" ")
+                  .map((word) => word[0].toUpperCase())
+                  .join("")}
+              </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">John Doe</span>
+              <span className="truncate font-semibold">{user.username}</span>
               <span className="truncate text-xs text-muted-foreground">
-                john@example.com
+                {user.email}
               </span>
             </div>
           </div>
@@ -123,6 +132,14 @@ export function AppSidebar() {
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={logout}
+            className="h-8 w-8"
+          >
+            <Power size={16} className="text-destructive-foreground" />
           </Button>
         </div>
       </SidebarFooter>
