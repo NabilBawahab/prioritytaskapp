@@ -122,7 +122,7 @@ export function CreateTask() {
           >
             {tasks.map((task, index) => {
               return (
-                <div className="space-y-2 relative">
+                <div key={index} className="space-y-2 relative">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -251,8 +251,10 @@ export function CreateTask() {
               );
             })}
           </div>
-          {!state?.success && (
+          {!state?.success ? (
             <div className="text-red-500">{state?.message}</div>
+          ) : (
+            <div className="text-blue-500">{state?.message}</div>
           )}
           <div className="flex gap-3">
             <Button

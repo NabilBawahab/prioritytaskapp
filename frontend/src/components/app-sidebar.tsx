@@ -31,6 +31,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ProfileResponse } from "@/type/type";
 import { logout } from "@/actions/logout";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
+import { useState } from "react";
 
 const menuItems = [
   {
@@ -63,6 +69,7 @@ const menuItems = [
 export function AppSidebar({ user }: { user: ProfileResponse }) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const [open, setOpen] = useState(false);
 
   return (
     <Sidebar variant="inset" className="border-r">
@@ -133,14 +140,38 @@ export function AppSidebar({ user }: { user: ProfileResponse }) {
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={logout}
-            className="h-8 w-8"
-          >
-            <Power size={16} className="text-destructive-foreground" />
-          </Button>
+
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Power size={16} className="text-destructive-foreground" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="px-4 py-3 rounded-lg shadow-md bg-popover transition-all duration-300 ease-out
+             data-[state=closed]:opacity-0 data-[state=closed]:translate-y-3
+             data-[state=open]:opacity-100 data-[state=open]:translate-y-0"
+              align="end"
+              sideOffset={24}
+            >
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hover:cursor-pointer hover:text-destructive-foreground"
+                onClick={logout}
+              >
+                <Power />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hover:cursor-pointer hover:text-destructive-foreground"
+                onClick={() => setOpen(false)}
+              >
+                No
+              </Button>
+            </PopoverContent>
+          </Popover>
         </div>
       </SidebarFooter>
 

@@ -15,7 +15,6 @@ export default async function Layout({
     redirect("/login");
   }
 
-  console.log("User data:", user);
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">

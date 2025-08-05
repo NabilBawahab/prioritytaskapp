@@ -45,3 +45,15 @@ export type CreateTaskInput = {
   status: string;
   dueDate: string;
 };
+
+export type Task = {
+  id: string;
+  createdAt: Date;
+  title: string;
+  description: string | null;
+  priority: string;
+  status: string;
+  dueDate: Date;
+  updatedAt: Date;
+  userId: string;
+}[];
