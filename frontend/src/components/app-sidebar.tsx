@@ -50,8 +50,8 @@ const menuItems = [
     icon: CheckSquare,
   },
   {
-    title: "TaskA AI",
-    url: "/dashboard/taska-ai",
+    title: "Amy (AI)",
+    url: "/dashboard/amy-ai",
     icon: Bot,
   },
 ];

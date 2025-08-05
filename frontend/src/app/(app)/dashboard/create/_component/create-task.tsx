@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 import {
   Card,
   CardContent,
@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
@@ -35,56 +34,65 @@ import {
   CalendarIcon,
   Clock,
   Flag,
-  Tag,
-  User,
-  Paperclip,
   CheckCircle,
+  FilePlus,
+  Ghost,
+  X,
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { CreateTaskInput } from "@/type/type";
+import { createTaskAction } from "../action";
 
 export function CreateTask() {
-  const [date, setDate] = useState<Date>();
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskDescription, setTaskDescription] = useState("");
-  const [priority, setPriority] = useState("");
-  const [assignee, setAssignee] = useState("");
-  const [category, setCategory] = useState("");
+  const [deleteTask, setDeleteTask] = useState([]);
+  const [multipleTask, setMultipleTask] = useState(false);
+  const [tasks, setTasks] = useState<CreateTaskInput[]>([
+    {
+      title: "",
+      description: "",
+      priority: "FIRST",
+      status: "TODO",
+      dueDate: "",
+    },
+  ]);
+  const [state, formAction, pending] = useActionState(
+    createTaskAction,
+    undefined,
+  );
 
-  const availableTags = [
-    "Design",
-    "Development",
-    "Marketing",
-    "Research",
-    "Meeting",
-    "Review",
-  ];
-  const teamMembers = [
-    "John Doe",
-    "Jane Smith",
-    "Mike Johnson",
-    "Sarah Wilson",
-  ];
-  const categories = ["Work", "Personal", "Learning", "Health", "Finance"];
-
-  const handleTagToggle = (tag: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
-    );
+  const handleAddTask = () => {
+    setTasks([
+      ...tasks,
+      {
+        title: "",
+        description: "",
+        priority: "FIRST",
+        status: "TODO",
+        dueDate: "",
+      },
+    ]);
+    setMultipleTask(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log({
-      title: taskTitle,
-      description: taskDescription,
-      priority,
-      assignee,
-      category,
-      dueDate: date,
-      tags: selectedTags,
+  const handleFieldChange = (
+    index: number,
+    field: keyof CreateTaskInput,
+    value: string,
+  ) => {
+    const newTasks = [...tasks];
+    newTasks[index][field] = value;
+    setTasks(newTasks);
+  };
+
+  const handleDeleteTask = (index: number) => {};
+
+  const handleSubmit = () => {
+    const formData = new FormData();
+    formData.append("tasks", JSON.stringify(tasks));
+
+    startTransition(() => {
+      formAction(formData);
     });
   };
 
@@ -107,198 +115,164 @@ export function CreateTask() {
               Add a new task to your workflow and stay organized.
             </p>
           </div>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Basic Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Plus className="h-5 w-5" />
-                  Task Details
-                </CardTitle>
-                <CardDescription>
-                  Provide the basic information for your task
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Task Title *</Label>
-                  <Input
-                    id="title"
-                    placeholder="Enter task title..."
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Describe your task in detail..."
-                    rows={4}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Priority</Label>
-                    <Select value={priority} onValueChange={setPriority}>
-                      <SelectTrigger>
-                        <Flag className="h-4 w-4 mr-2" />
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="FOURTH">Fourth Priority</SelectItem>
-                        <SelectItem value="THIRD">Third Priority</SelectItem>
-                        <SelectItem value="SECOND">Second Priority</SelectItem>
-                        <SelectItem value="FIRST">First Priority</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Assignment & Scheduling */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  Assignment & Scheduling
-                </CardTitle>
-                <CardDescription>
-                  Set deadlines and assign team members
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Due Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !date && "text-muted-foreground",
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date ? format(date, "PPP") : "Pick a date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={date}
-                          onSelect={setDate}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Assign To</Label>
-                    <Select value={assignee} onValueChange={setAssignee}>
-                      <SelectTrigger>
-                        <User className="h-4 w-4 mr-2" />
-                        <SelectValue placeholder="Select assignee" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {teamMembers.map((member) => (
-                          <SelectItem
-                            key={member}
-                            value={member.toLowerCase().replace(" ", "-")}
-                          >
-                            {member}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Tags */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Tag className="h-5 w-5" />
-                  Tags
-                </CardTitle>
-                <CardDescription>
-                  Add tags to categorize and organize your task
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-2">
-                    {availableTags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        variant={
-                          selectedTags.includes(tag) ? "default" : "outline"
-                        }
-                        className="cursor-pointer"
-                        onClick={() => handleTagToggle(tag)}
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                  {selectedTags.length > 0 && (
-                    <div className="space-y-2">
-                      <Label>Selected Tags:</Label>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedTags.map((tag) => (
-                          <Badge key={tag} variant="secondary">
-                            {tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Attachments */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Paperclip className="h-5 w-5" />
-                  Attachments
-                </CardTitle>
-                <CardDescription>
-                  Upload files related to this task
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-                  <Paperclip className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Drag and drop files here, or click to browse
-                  </p>
-                  <Button variant="outline" size="sm">
-                    Choose Files
+          <div
+            className={`flex flex-col gap-4 ${
+              multipleTask && "lg:grid lg:grid-cols-2"
+            }`}
+          >
+            {tasks.map((task, index) => {
+              return (
+                <div className="space-y-2 relative">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-2 top-2 text-muted-foreground hover:text-destructive rounded-full"
+                  >
+                    <X className="h-4 w-4" />
                   </Button>
-                </div>
-              </CardContent>
-            </Card>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Plus className="h-5 w-5" />
+                        Task Details
+                      </CardTitle>
+                      <CardDescription>
+                        Provide the basic information for your task
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="title">Task Title *</Label>
+                        <Input
+                          id="title"
+                          placeholder="Enter task title..."
+                          required
+                          onChange={(e) =>
+                            handleFieldChange(index, "title", e.target.value)
+                          }
+                        />
+                      </div>
 
-            {/* Submit Button */}
-            <div className="flex gap-3">
-              <Button type="submit" className="flex-1">
-                <CheckCircle className="h-4 w-4 mr-2" />
-                Create Task
-              </Button>
-              <Button type="button" variant="outline">
-                Save as Draft
-              </Button>
-            </div>
-          </form>
+                      <div className="space-y-2">
+                        <Label htmlFor="description">Description</Label>
+                        <Textarea
+                          id="description"
+                          placeholder="Describe your task in detail..."
+                          rows={4}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              index,
+                              "description",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Priority</Label>
+                        <Select
+                          value={task.priority}
+                          onValueChange={(value) =>
+                            handleFieldChange(index, "priority", value)
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <Flag className="h-4 w-4 mr-2" />
+                            <SelectValue placeholder="Select priority" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="FIRST">
+                              First Priority
+                            </SelectItem>
+                            <SelectItem value="SECOND">
+                              Second Priority
+                            </SelectItem>
+                            <SelectItem value="THIRD">
+                              Third Priority
+                            </SelectItem>
+                            <SelectItem value="FOURTH">
+                              Fourth Priority
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Assignment & Scheduling */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Clock className="h-5 w-5" />
+                        Scheduling
+                      </CardTitle>
+                      <CardDescription>Set your task deadlines</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Due Date</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !task.dueDate && "text-muted-foreground",
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {task.dueDate
+                                ? format(new Date(task.dueDate), "PPP")
+                                : "Pick a date"}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0">
+                            <Calendar
+                              mode="single"
+                              selected={
+                                task.dueDate
+                                  ? new Date(task.dueDate)
+                                  : undefined
+                              }
+                              onSelect={(selectedDate) => {
+                                handleFieldChange(
+                                  index,
+                                  "dueDate",
+                                  selectedDate?.toISOString() ?? "",
+                                );
+                              }}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              );
+            })}
+          </div>
+          {!state?.success && (
+            <div className="text-red-500">{state?.message}</div>
+          )}
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              className="flex-1 hover:cursor-pointer"
+              onClick={handleSubmit}
+            >
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Create Task
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="hover:cursor-pointer"
+              onClick={handleAddTask}
+            >
+              <FilePlus />
+              Add more Task
+            </Button>
+          </div>
         </div>
       </div>
     </SidebarInset>
