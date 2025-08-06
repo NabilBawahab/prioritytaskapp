@@ -42,118 +42,100 @@ import {
 import Link from "next/link";
 import type { Task } from "@/type/type";
 
-interface TaskDummy {
-  id: number;
-  title: string;
-  description: string;
-  status: "todo" | "in-progress" | "completed" | "overdue";
-  priority: "low" | "medium" | "high" | "urgent";
-  assignee: string;
-  dueDate: string;
-  tags: string[];
-  completed: boolean;
-}
+const now = new Date();
 
 export function TaskList({ tasks }: { tasks: Task }) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [priorityFilter, setPriorityFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [priorityFilter, setPriorityFilter] = useState("ALL");
 
-  const [dummyTasks, setDummyTask] = useState<TaskDummy[]>([
-    {
-      id: 1,
-      title: "Design new landing page",
-      description:
-        "Create a modern and responsive landing page for the new product launch",
-      status: "completed",
-      priority: "high",
-      assignee: "John Doe",
-      dueDate: "2024-01-15",
-      tags: ["Design", "Frontend"],
-      completed: true,
-    },
-    {
-      id: 2,
-      title: "Review code changes",
-      description:
-        "Review and approve the latest pull requests from the development team",
-      status: "in-progress",
-      priority: "medium",
-      assignee: "Jane Smith",
-      dueDate: "2024-01-16",
-      tags: ["Development", "Review"],
-      completed: false,
-    },
-    {
-      id: 3,
-      title: "Update documentation",
-      description:
-        "Update the API documentation with the latest changes and examples",
-      status: "todo",
-      priority: "low",
-      assignee: "Mike Johnson",
-      dueDate: "2024-01-17",
-      tags: ["Documentation"],
-      completed: false,
-    },
-    {
-      id: 4,
-      title: "Client meeting preparation",
-      description:
-        "Prepare presentation materials for the upcoming client meeting",
-      status: "in-progress",
-      priority: "high",
-      assignee: "Sarah Wilson",
-      dueDate: "2024-01-18",
-      tags: ["Meeting", "Presentation"],
-      completed: false,
-    },
-    {
-      id: 5,
-      title: "Database optimization",
-      description:
-        "Optimize database queries to improve application performance",
-      status: "overdue",
-      priority: "urgent",
-      assignee: "John Doe",
-      dueDate: "2024-01-12",
-      tags: ["Database", "Performance"],
-      completed: false,
-    },
-    {
-      id: 6,
-      title: "User testing session",
-      description:
-        "Conduct user testing sessions for the new feature implementation",
-      status: "todo",
-      priority: "medium",
-      assignee: "Jane Smith",
-      dueDate: "2024-01-20",
-      tags: ["Testing", "UX"],
-      completed: false,
-    },
-  ]);
+  // const [dummyTasks, setDummyTask] = useState<TaskDummy[]>([
+  //   {
+  //     id: 1,
+  //     title: "Design new landing page",
+  //     description:
+  //       "Create a modern and responsive landing page for the new product launch",
+  //     status: "completed",
+  //     priority: "high",
+  //     assignee: "John Doe",
+  //     dueDate: "2024-01-15",
+  //     tags: ["Design", "Frontend"],
+  //     completed: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Review code changes",
+  //     description:
+  //       "Review and approve the latest pull requests from the development team",
+  //     status: "in-progress",
+  //     priority: "medium",
+  //     assignee: "Jane Smith",
+  //     dueDate: "2024-01-16",
+  //     tags: ["Development", "Review"],
+  //     completed: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Update documentation",
+  //     description:
+  //       "Update the API documentation with the latest changes and examples",
+  //     status: "todo",
+  //     priority: "low",
+  //     assignee: "Mike Johnson",
+  //     dueDate: "2024-01-17",
+  //     tags: ["Documentation"],
+  //     completed: false,
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Client meeting preparation",
+  //     description:
+  //       "Prepare presentation materials for the upcoming client meeting",
+  //     status: "in-progress",
+  //     priority: "high",
+  //     assignee: "Sarah Wilson",
+  //     dueDate: "2024-01-18",
+  //     tags: ["Meeting", "Presentation"],
+  //     completed: false,
+  //   },
+  //   {
+  //     id: 5,
+  //     title: "Database optimization",
+  //     description:
+  //       "Optimize database queries to improve application performance",
+  //     status: "overdue",
+  //     priority: "urgent",
+  //     assignee: "John Doe",
+  //     dueDate: "2024-01-12",
+  //     tags: ["Database", "Performance"],
+  //     completed: false,
+  //   },
+  //   {
+  //     id: 6,
+  //     title: "User testing session",
+  //     description:
+  //       "Conduct user testing sessions for the new feature implementation",
+  //     status: "todo",
+  //     priority: "medium",
+  //     assignee: "Jane Smith",
+  //     dueDate: "2024-01-20",
+  //     tags: ["Testing", "UX"],
+  //     completed: false,
+  //   },
+  // ]);
 
-  const toggleTaskCompletion = (taskId: number) => {
-    setDummyTask(
-      dummyTasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              completed: !task.completed,
-              status: !task.completed ? "completed" : "todo",
-            }
-          : task,
-      ),
-    );
-  };
+  const toggleTaskCompletion = (taskId: number) => {};
 
   const filteredTasks = tasks.filter((task) => {
+    const isOverdue = task.status !== "done" && new Date(task.dueDate) < now;
+
+    const effectiveStatus = isOverdue ? "overdue" : task.status;
+
     const matchesSearch =
       task.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       task.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
-      statusFilter === "ALL" || task.status === statusFilter;
+      statusFilter === "ALL" || effectiveStatus === statusFilter;
     const matchesPriority =
       priorityFilter === "ALL" || task.priority === priorityFilter;
 
@@ -196,7 +178,7 @@ export function TaskList({ tasks }: { tasks: Task }) {
         return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
       case "IN_PROGRESS":
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
-      case "overdue":
+      case "OVERDUE":
         return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
@@ -342,7 +324,9 @@ export function TaskList({ tasks }: { tasks: Task }) {
                   <p className="text-2xl font-bold">
                     {
                       tasks.filter(
-                        (task) => new Date(task.dueDate) < new Date(),
+                        (task) =>
+                          task.status !== "DONE" &&
+                          new Date(task.dueDate) < new Date(),
                       ).length
                     }
                   </p>
@@ -373,7 +357,7 @@ export function TaskList({ tasks }: { tasks: Task }) {
                   className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   {/* <Checkbox
-                    checked={task.completed}
+                    checked={task.status === "DONE"}
                     onCheckedChange={() => toggleTaskCompletion(task.id)}
                   /> */}
 
@@ -407,8 +391,19 @@ export function TaskList({ tasks }: { tasks: Task }) {
                         variant="outline"
                         className={`text-xs ${getStatusColor(task.status)}`}
                       >
-                        {task.status.replace("-", " ")}
+                        {task.status.replace("_", " ")}
                       </Badge>
+
+                      {/* if overdue*/}
+                      {task.status !== "DONE" &&
+                      new Date(task.dueDate) < now ? (
+                        <Badge
+                          variant="outline"
+                          className={`text-xs ${getStatusColor("OVERDUE")}`}
+                        >
+                          OVERDUE
+                        </Badge>
+                      ) : null}
 
                       {/* {task.tags.map((tag) => (
                         <Badge
@@ -422,13 +417,17 @@ export function TaskList({ tasks }: { tasks: Task }) {
                     </div>
 
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
+                      {/* <div className="flex items-center gap-1">
                         <User className="h-3 w-3" />
                         {task.assignee}
-                      </div>
+                      </div> */}
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {task.dueDate}
+                        {new Date(task.dueDate).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
                       </div>
                     </div>
                   </div>
@@ -440,9 +439,15 @@ export function TaskList({ tasks }: { tasks: Task }) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Edit Task</DropdownMenuItem>
-                      <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                      <DropdownMenuItem>Assign to...</DropdownMenuItem>
+                      <DropdownMenuItem>
+                        Mark as In Progress{" "}
+                        <Clock className="h-4 w-4 text-yellow-600" />
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        Mark as done{" "}
+                        <CheckCircle className="h-4 w-4 text-green-600" />
+                      </DropdownMenuItem>
+                      {/* <DropdownMenuItem>Assign to...</DropdownMenuItem> */}
                       <DropdownMenuItem className="text-red-600">
                         Delete
                       </DropdownMenuItem>

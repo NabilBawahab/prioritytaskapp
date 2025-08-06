@@ -8,7 +8,10 @@ import {
   Moon,
   Sun,
   Power,
-  Ghost,
+  CheckCircle,
+  Clock,
+  MoreHorizontal,
+  X,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -37,6 +40,12 @@ import {
   PopoverTrigger,
 } from "@radix-ui/react-popover";
 import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 const menuItems = [
   {
@@ -141,7 +150,27 @@ export function AppSidebar({ user }: { user: ProfileResponse }) {
             <span className="sr-only">Toggle theme</span>
           </Button>
 
-          <Popover open={open} onOpenChange={setOpen}>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Power size={16} className="text-destructive-foreground" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem
+                className="text-red-600 w-fit text-center mx-auto"
+                onClick={logout}
+              >
+                Logout
+                <Power size={16} className="text-destructive-foreground" />
+              </DropdownMenuItem>
+              <DropdownMenuItem className="w-fit text-center mx-auto">
+                Cancel <X size={16} />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
                 <Power size={16} className="text-destructive-foreground" />
@@ -171,7 +200,7 @@ export function AppSidebar({ user }: { user: ProfileResponse }) {
                 No
               </Button>
             </PopoverContent>
-          </Popover>
+          </Popover> */}
         </div>
       </SidebarFooter>
 
