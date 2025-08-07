@@ -41,6 +41,15 @@ import Link from "next/link";
 import type { Task } from "@/type/type";
 import { taskStatusUpdate } from "../action";
 import { useRouter } from "next/navigation";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const now = new Date();
 
@@ -48,83 +57,14 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemPerPage = 5;
+
+  const totalPage = Math.ceil(tasks.length / itemPerPage);
 
   const [state, formAction, pending] = useActionState(taskStatusUpdate, null);
   const router = useRouter();
-  // const [dummyTasks, setDummyTask] = useState<TaskDummy[]>([
-  //   {
-  //     id: 1,
-  //     title: "Design new landing page",
-  //     description:
-  //       "Create a modern and responsive landing page for the new product launch",
-  //     status: "completed",
-  //     priority: "high",
-  //     assignee: "John Doe",
-  //     dueDate: "2024-01-15",
-  //     tags: ["Design", "Frontend"],
-  //     completed: true,
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Review code changes",
-  //     description:
-  //       "Review and approve the latest pull requests from the development team",
-  //     status: "in-progress",
-  //     priority: "medium",
-  //     assignee: "Jane Smith",
-  //     dueDate: "2024-01-16",
-  //     tags: ["Development", "Review"],
-  //     completed: false,
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "Update documentation",
-  //     description:
-  //       "Update the API documentation with the latest changes and examples",
-  //     status: "todo",
-  //     priority: "low",
-  //     assignee: "Mike Johnson",
-  //     dueDate: "2024-01-17",
-  //     tags: ["Documentation"],
-  //     completed: false,
-  //   },
-  //   {
-  //     id: 4,
-  //     title: "Client meeting preparation",
-  //     description:
-  //       "Prepare presentation materials for the upcoming client meeting",
-  //     status: "in-progress",
-  //     priority: "high",
-  //     assignee: "Sarah Wilson",
-  //     dueDate: "2024-01-18",
-  //     tags: ["Meeting", "Presentation"],
-  //     completed: false,
-  //   },
-  //   {
-  //     id: 5,
-  //     title: "Database optimization",
-  //     description:
-  //       "Optimize database queries to improve application performance",
-  //     status: "overdue",
-  //     priority: "urgent",
-  //     assignee: "John Doe",
-  //     dueDate: "2024-01-12",
-  //     tags: ["Database", "Performance"],
-  //     completed: false,
-  //   },
-  //   {
-  //     id: 6,
-  //     title: "User testing session",
-  //     description:
-  //       "Conduct user testing sessions for the new feature implementation",
-  //     status: "todo",
-  //     priority: "medium",
-  //     assignee: "Jane Smith",
-  //     dueDate: "2024-01-20",
-  //     tags: ["Testing", "UX"],
-  //     completed: false,
-  //   },
-  // ]);
 
   const filteredTasks = tasks.filter((task) => {
     const isOverdue = task.status !== "done" && new Date(task.dueDate) < now;
@@ -142,7 +82,7 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
-  const sortedTask = filteredTasks.sort((a, b) => {
+  const sortedTasks = filteredTasks.sort((a, b) => {
     const statusOrder = {
       IN_PROGRESS: 0,
       TODO: 1,
@@ -171,6 +111,11 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
 
     return dueDateDiff;
   });
+
+  const paginatedTasks = sortedTasks.slice(
+    (currentPage - 1) * itemPerPage,
+    currentPage * itemPerPage,
+  );
 
   useEffect(() => {
     if (state?.success) {
@@ -385,9 +330,9 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
                 : `Filtered results (${filteredTasks.length} of ${tasks.length})`}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="space-y-4">
-              {sortedTask.map((task) => (
+              {paginatedTasks.map((task) => (
                 <div
                   key={task.id}
                   className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
@@ -530,6 +475,40 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
                 </div>
               )}
             </div>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem className="hover:cursor-pointer">
+                  <PaginationPrevious
+                    onClick={() => {
+                      if (currentPage > 1) {
+                        setCurrentPage(currentPage - 1);
+                      }
+                    }}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPage }).map((_, i) => {
+                  return (
+                    <PaginationItem key={i} className="hover:cursor-pointer">
+                      <PaginationLink
+                        isActive={currentPage === i + 1}
+                        onClick={() => setCurrentPage(i + 1)}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+                <PaginationItem className="hover:cursor-pointer">
+                  <PaginationNext
+                    onClick={() => {
+                      if (currentPage !== totalPage) {
+                        setCurrentPage(currentPage + 1);
+                      }
+                    }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </CardContent>
         </Card>
       </div>
