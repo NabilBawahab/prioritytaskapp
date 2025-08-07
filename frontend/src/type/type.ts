@@ -56,4 +56,9 @@ export type Task = {
   dueDate: Date;
   updatedAt: Date;
   userId: string;
-}[];
+};
+
+export type GeneralAPISuccessResponse = {
+  status: number;
+  message: string;
+};

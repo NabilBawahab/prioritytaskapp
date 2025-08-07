@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { api } from "./axios";
-import { AxiosResponse } from "axios";
-import { ProfileResponse } from "@/type/type";
+import { AxiosError, AxiosResponse } from "axios";
+import { ErrorResponse, ProfileResponse } from "@/type/type";
 
 export async function auth() {
   const cookieStore = await cookies();
@@ -20,7 +20,8 @@ export async function auth() {
 
     return res.data;
   } catch (error) {
-    console.error("Authentication error:", error);
+    const axiosError = error as AxiosError<ErrorResponse>;
+    console.error("Authentication error:", axiosError.response?.data);
     return null;
   }
 }

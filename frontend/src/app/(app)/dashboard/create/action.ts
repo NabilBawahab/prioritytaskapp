@@ -4,7 +4,7 @@ import { api } from "@/lib/axios";
 import type {
   CreateTaskInput,
   ErrorResponse,
-  LoginResponse,
+  GeneralAPISuccessResponse,
 } from "@/type/type";
 import { AxiosError, AxiosResponse } from "axios";
 import { cookies } from "next/headers";
@@ -34,7 +34,7 @@ export async function createTaskAction(_: any, formData: FormData) {
   }
 
   try {
-    const res: AxiosResponse<LoginResponse> = await api.post(
+    const res: AxiosResponse<GeneralAPISuccessResponse> = await api.post(
       "/user/create",
       tasks.map((task) => {
         return {
@@ -50,7 +50,7 @@ export async function createTaskAction(_: any, formData: FormData) {
     return { success: true, message: res.data.message };
   } catch (error) {
     const axiosError = error as AxiosError<ErrorResponse>;
-    console.error("Create task error", axiosError.response?.data.message);
+    console.error("Create task error", axiosError.response?.data);
     return {
       success: false,
       message:

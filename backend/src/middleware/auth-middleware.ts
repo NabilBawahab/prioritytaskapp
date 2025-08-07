@@ -40,6 +40,7 @@ export const authMiddleware = async (
     next();
   } catch (error) {
     console.error("Error authenticating", error);
+
     res.status(403);
     res.json({
       status: res.statusCode,

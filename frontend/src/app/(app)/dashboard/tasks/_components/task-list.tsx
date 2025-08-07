@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -20,14 +20,12 @@ import {
 } from "@/components/ui/select";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Search,
   Filter,
   MoreHorizontal,
   Calendar,
   Flag,
-  User,
   CheckCircle,
   Clock,
   AlertCircle,
@@ -41,14 +39,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import type { Task } from "@/type/type";
+import { taskStatusUpdate } from "../action";
+import { useRouter } from "next/navigation";
 
 const now = new Date();
 
-export function TaskList({ tasks }: { tasks: Task }) {
+export function TaskList({ tasks }: { tasks: Task[] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
 
+  const [state, formAction, pending] = useActionState(taskStatusUpdate, null);
+  const router = useRouter();
   // const [dummyTasks, setDummyTask] = useState<TaskDummy[]>([
   //   {
   //     id: 1,
@@ -124,8 +126,6 @@ export function TaskList({ tasks }: { tasks: Task }) {
   //   },
   // ]);
 
-  const toggleTaskCompletion = (taskId: number) => {};
-
   const filteredTasks = tasks.filter((task) => {
     const isOverdue = task.status !== "done" && new Date(task.dueDate) < now;
 
@@ -141,6 +141,42 @@ export function TaskList({ tasks }: { tasks: Task }) {
 
     return matchesSearch && matchesStatus && matchesPriority;
   });
+
+  const sortedTask = filteredTasks.sort((a, b) => {
+    const statusOrder = {
+      IN_PROGRESS: 0,
+      TODO: 1,
+      OVERDUE: 2,
+      DONE: 3,
+    };
+    const getEffectiveStatus = (task: Task) => {
+      if (task.status !== "DONE" && new Date(task.dueDate) < now) {
+        return "OVERDUE";
+      }
+      return task.status;
+    };
+    const statusA = getEffectiveStatus(a);
+    const statusB = getEffectiveStatus(b);
+
+    const statusDiff =
+      statusOrder[statusA as keyof typeof statusOrder] -
+      statusOrder[statusB as keyof typeof statusOrder];
+
+    if (statusDiff !== 0) {
+      return statusDiff;
+    }
+
+    const dueDateDiff =
+      new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+
+    return dueDateDiff;
+  });
+
+  useEffect(() => {
+    if (state?.success) {
+      router.refresh();
+    }
+  }, [state]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -351,7 +387,7 @@ export function TaskList({ tasks }: { tasks: Task }) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {filteredTasks.map((task) => (
+              {sortedTask.map((task) => (
                 <div
                   key={task.id}
                   className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-muted/50 transition-colors"
@@ -439,14 +475,38 @@ export function TaskList({ tasks }: { tasks: Task }) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem>
-                        Mark as In Progress{" "}
-                        <Clock className="h-4 w-4 text-yellow-600" />
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        Mark as done{" "}
-                        <CheckCircle className="h-4 w-4 text-green-600" />
-                      </DropdownMenuItem>
+                      <form action={formAction}>
+                        <input hidden defaultValue={task.id} name="taskId" />
+                        <input
+                          hidden
+                          defaultValue="IN_PROGRESS"
+                          name="status"
+                        />
+                        <button
+                          type="submit"
+                          disabled={pending}
+                          className="h-full w-full"
+                        >
+                          <DropdownMenuItem>
+                            Mark as In Progress{" "}
+                            <Clock className="h-4 w-4 text-yellow-600" />
+                          </DropdownMenuItem>
+                        </button>
+                      </form>
+                      <form action={formAction}>
+                        <input hidden defaultValue={task.id} name="taskId" />
+                        <input hidden defaultValue="DONE" name="status" />
+                        <button
+                          type="submit"
+                          disabled={pending}
+                          className="w-full h-full"
+                        >
+                          <DropdownMenuItem>
+                            Mark as done{" "}
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          </DropdownMenuItem>
+                        </button>
+                      </form>
                       {/* <DropdownMenuItem>Assign to...</DropdownMenuItem> */}
                       <DropdownMenuItem className="text-red-600">
                         Delete
