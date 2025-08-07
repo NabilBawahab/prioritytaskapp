@@ -89,6 +89,14 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
       OVERDUE: 2,
       DONE: 3,
     };
+
+    const priorityOrder = {
+      FIRST: 0,
+      SECOND: 1,
+      THIRD: 2,
+      FOURTH: 3,
+    };
+
     const getEffectiveStatus = (task: Task) => {
       if (task.status !== "DONE" && new Date(task.dueDate) < now) {
         return "OVERDUE";
@@ -98,12 +106,23 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
     const statusA = getEffectiveStatus(a);
     const statusB = getEffectiveStatus(b);
 
+    const priorityA = a.priority;
+    const priorityB = b.priority;
+
     const statusDiff =
       statusOrder[statusA as keyof typeof statusOrder] -
       statusOrder[statusB as keyof typeof statusOrder];
 
+    const priorityDiff =
+      priorityOrder[priorityA as keyof typeof priorityOrder] -
+      priorityOrder[priorityB as keyof typeof priorityOrder];
+
     if (statusDiff !== 0) {
       return statusDiff;
+    }
+
+    if (priorityDiff !== 0) {
+      return priorityDiff;
     }
 
     const dueDateDiff =
