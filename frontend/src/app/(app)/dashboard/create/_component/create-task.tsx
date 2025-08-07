@@ -45,7 +45,6 @@ import { CreateTaskInput } from "@/type/type";
 import { createTaskAction } from "../action";
 
 export function CreateTask() {
-  const [deleteTask, setDeleteTask] = useState([]);
   const [multipleTask, setMultipleTask] = useState(false);
   const [tasks, setTasks] = useState<CreateTaskInput[]>([
     {
@@ -85,7 +84,14 @@ export function CreateTask() {
     setTasks(newTasks);
   };
 
-  const handleDeleteTask = (index: number) => {};
+  const handleDeleteTask = (index: number) => {
+    const deleteTask = tasks.filter((_, i) => index !== i);
+    setTasks(deleteTask);
+
+    if (deleteTask.length === 1) {
+      setMultipleTask(false);
+    }
+  };
 
   const handleSubmit = () => {
     const formData = new FormData();
@@ -127,6 +133,7 @@ export function CreateTask() {
                     variant="ghost"
                     size="icon"
                     className="absolute right-2 top-2 text-muted-foreground hover:text-destructive rounded-full"
+                    onClick={() => handleDeleteTask(index)}
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -147,6 +154,7 @@ export function CreateTask() {
                           id="title"
                           placeholder="Enter task title..."
                           required
+                          value={task.title}
                           onChange={(e) =>
                             handleFieldChange(index, "title", e.target.value)
                           }
@@ -159,6 +167,7 @@ export function CreateTask() {
                           id="description"
                           placeholder="Describe your task in detail..."
                           rows={4}
+                          value={task.description}
                           onChange={(e) =>
                             handleFieldChange(
                               index,
