@@ -471,10 +471,18 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
                           </DropdownMenuItem>
                         </button>
                       </form>
-                      {/* <DropdownMenuItem>Assign to...</DropdownMenuItem> */}
-                      <DropdownMenuItem className="text-red-600">
-                        Delete
-                      </DropdownMenuItem>
+                      <form action={formAction}>
+                        <input hidden defaultValue={task.id} name="taskId" />
+                        <button
+                          type="submit"
+                          disabled={pending}
+                          className="w-full h-full"
+                        >
+                          <DropdownMenuItem className="text-red-600">
+                            Delete
+                          </DropdownMenuItem>
+                        </button>
+                      </form>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
