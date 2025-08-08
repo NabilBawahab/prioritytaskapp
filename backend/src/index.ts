@@ -21,6 +21,10 @@ app.use("/", authenticationRoute);
 
 app.use("/user", userRoute);
 
+app.get("/ping", (_, res: Response) => {
+  res.send("pong");
+});
+
 app.listen(PORT, () => {
   console.log(`Server Running on PORT:${PORT}`);
 });
