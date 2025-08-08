@@ -7,7 +7,7 @@ import { userRoute } from "./routes/user-create-task";
 
 const app = express();
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT ?? 8080;
 
 app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
