@@ -126,14 +126,14 @@ export function AppSidebar({ user }: { user: ProfileResponse }) {
             <Avatar className="h-8 w-8">
               <AvatarImage src="/placeholder.svg?height=32&width=32" />
               <AvatarFallback>
-                {user.username
+                {user.name
                   .split(" ")
                   .map((word) => word[0].toUpperCase())
                   .join("")}
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{user.username}</span>
+              <span className="truncate font-semibold">{user.name}</span>
               <span className="truncate text-xs text-muted-foreground">
                 {user.email}
               </span>

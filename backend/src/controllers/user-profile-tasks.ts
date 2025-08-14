@@ -26,8 +26,11 @@ export const userProfileTasks = async (req: Request, res: Response) => {
     res.status(200);
     res.json({
       status: res.statusCode,
-      username: userTasks?.username,
+      id: userTasks?.id,
+      name: userTasks?.name,
       email: userTasks?.email,
+      avatarUrl: userTasks?.avatarUrl,
+      bio: userTasks?.bio,
       data: userTasks?.tasks,
     });
   } catch (error) {

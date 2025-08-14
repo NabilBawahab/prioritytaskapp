@@ -22,9 +22,12 @@ export type RegisterResponse = {
 };
 
 export type ProfileResponse = {
+  id: string;
   status: number;
-  username: string;
+  name: string;
   email: string;
+  avatarUrl?: string;
+  bio?: string;
   data?: {
     id: string;
     createdAt: Date;

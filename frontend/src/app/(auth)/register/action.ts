@@ -6,7 +6,7 @@ import type { AxiosError, AxiosResponse } from "axios";
 
 export async function registerAction(_: any, formData: FormData) {
   const email = formData.get("email") as string;
-  const username = formData.get("username") as string;
+  const name = formData.get("name") as string;
   const password = formData.get("password") as string;
   const confirmPassword = formData.get("confirmedpassword") as string;
 
@@ -20,7 +20,7 @@ export async function registerAction(_: any, formData: FormData) {
   try {
     const res: AxiosResponse<RegisterResponse> = await api.post("/register", {
       email,
-      username,
+      name,
       password,
     });
 

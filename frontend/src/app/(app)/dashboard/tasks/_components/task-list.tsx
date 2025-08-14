@@ -44,7 +44,6 @@ import { useRouter } from "next/navigation";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -494,8 +493,8 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
                   <h3 className="text-lg font-medium mb-2">No tasks found</h3>
                   <p className="text-muted-foreground">
                     {searchTerm ||
-                    statusFilter !== "all" ||
-                    priorityFilter !== "all"
+                    statusFilter !== "ALL" ||
+                    priorityFilter !== "ALL"
                       ? "Try adjusting your filters to see more tasks."
                       : "Create your first task to get started."}
                   </p>

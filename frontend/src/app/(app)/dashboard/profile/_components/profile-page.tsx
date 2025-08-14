@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -24,6 +26,10 @@ import {
   Camera,
 } from "lucide-react";
 import { ProfileResponse, Task } from "@/type/type";
+import { useActionState } from "react";
+import { editProfileAction } from "../action";
+
+const now = new Date();
 
 export default function ProfilePage({
   user,
@@ -32,6 +38,8 @@ export default function ProfilePage({
   user: ProfileResponse;
   tasks: Task[];
 }) {
+  const [state, formAction, pending] = useActionState(editProfileAction, null);
+
   const achievements = [
     { title: "Task Master", description: "Completed 100+ tasks", icon: "🏆" },
     {
@@ -52,10 +60,17 @@ export default function ProfilePage({
   ];
 
   const stats = [
-    { label: "Tasks Completed", value: "156" },
-    { label: "Projects", value: "12" },
-    { label: "Streak Days", value: "7" },
-    { label: "Team Members", value: "8" },
+    { label: "Total Tasks", value: tasks.length },
+    {
+      label: "Tasks Completed",
+      value: tasks.filter((task) => task.status === "DONE").length,
+    },
+    {
+      label: "Tasks Overdue",
+      value: tasks.filter(
+        (task) => task.status !== "DONE" && new Date(task.dueDate) < now,
+      ).length,
+    },
   ];
 
   return (
@@ -74,13 +89,23 @@ export default function ProfilePage({
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src="/placeholder.svg?height=96&width=96" />
-                    <AvatarFallback className="text-lg">
-                      {user.username
+                    {user.avatarUrl ? (
+                      <AvatarImage src={user.avatarUrl} />
+                    ) : (
+                      <AvatarFallback className="text-lg">
+                        {user.name
+                          .split(" ")
+                          .map((word) => word[0].toUpperCase())
+                          .join("")}
+                      </AvatarFallback>
+                    )}
+
+                    {/* <AvatarFallback className="text-lg">
+                      {user.name
                         .split(" ")
                         .map((word) => word[0].toUpperCase())
                         .join("")}
-                    </AvatarFallback>
+                    </AvatarFallback> */}
                   </Avatar>
                   <Button
                     size="icon"
@@ -97,11 +122,11 @@ export default function ProfilePage({
 
               <div className="flex-1 space-y-4">
                 <div className="mx-auto w-fit text-center lg:text-left lg:mx-0">
-                  <h2 className="text-2xl font-bold">{user.username}</h2>
+                  <h2 className="text-2xl font-bold">{user.name}</h2>
                   <p className="text-muted-foreground">{user.email}</p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   {stats.map((stat) => (
                     <div key={stat.label} className="text-center">
                       <div className="text-2xl font-bold text-primary">

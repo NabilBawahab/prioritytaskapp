@@ -9,7 +9,7 @@ import { redirect, useRouter } from "next/navigation";
 export default function Page() {
   const [state, formAction, pending] = useActionState(registerAction, null);
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -36,10 +36,10 @@ export default function Page() {
           className="border-slate-200 border rounded-lg px-2 py-1 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors duration-500"
         />
         <input
-          placeholder="Input your username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          name="username"
+          placeholder="Input your name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          name="name"
           className="border-slate-200 border rounded-lg px-2 py-1 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors duration-500"
         />
         <input

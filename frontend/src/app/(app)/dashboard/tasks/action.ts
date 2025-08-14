@@ -38,7 +38,7 @@ export async function taskStatusUpdate(_: any, formData: FormData) {
 
   try {
     const res: AxiosResponse<GeneralAPISuccessResponse> = await api.put(
-      "/user/update",
+      "/user/updatetask",
       { id, status },
       { headers: { Authorization: `Bearer ${token}` } },
     );

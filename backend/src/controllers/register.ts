@@ -12,12 +12,12 @@
  *             type: object
  *             required:
  *               - email
- *               - username
+ *               - name
  *               - password
  *             properties:
  *               email:
  *                 type: string
- *               username:
+ *               name:
  *                 type: string
  *               password:
  *                 type: string
@@ -35,9 +35,9 @@ import bcrypt from "bcrypt";
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const registerAction = async (req: Request, res: Response) => {
-  const { email, username, password } = req.body ?? {};
+  const { email, name, password } = req.body ?? {};
 
-  if (!email || !username || !password) {
+  if (!email || !name || !password) {
     res.status(406);
     res.json({
       status: res.statusCode,
@@ -85,7 +85,7 @@ export const registerAction = async (req: Request, res: Response) => {
     await prisma.user.create({
       data: {
         email,
-        username,
+        name,
         password: hashedPassword,
       },
     });
