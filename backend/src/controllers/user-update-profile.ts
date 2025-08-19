@@ -15,5 +15,6 @@ export const updateProfile = (req: Request, res: Response) => {
   const { email, name, bio } = req.body;
 
   if (!email || !name || !bio) {
+    //Notcompleted
   }
 };
