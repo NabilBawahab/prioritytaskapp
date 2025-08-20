@@ -29,6 +29,8 @@ import type { Request, Response } from "express";
 import { prisma } from "../utils/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import type { GoogleUserData } from "../type/type";
+import { User } from "@prisma/client";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -36,56 +38,104 @@ export const loginAction = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  const { email, password } = req.body ?? {};
+  let user;
 
-  if (!email || !password) {
-    res.status(406);
-    res.json({
-      status: res.statusCode,
-      message: "Field must be filled",
-    });
+  // Google oauth
+  if ((req as any).user) {
+    const googleUser = (req as any).user as GoogleUserData;
+
+    try {
+      const isUserExisted = await prisma.user.findUnique({
+        where: {
+          email: googleUser.email,
+        },
+      });
+
+      if (!isUserExisted) {
+        user = await prisma.user.create({
+          data: {
+            email: googleUser.email,
+            name: googleUser.name,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error google oauth action", error);
+
+      res.status(500);
+      res.json({
+        status: res.statusCode,
+        message: "There is an Error in google Oauth",
+      });
+      return;
+    }
+  } else {
+    // Standart Login
+    const { email, password } = req.body ?? {};
+
+    if (!email || !password) {
+      res.status(406);
+      res.json({
+        status: res.statusCode,
+        message: "Field must be filled",
+      });
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      res.status(400);
+      res.json({
+        status: res.statusCode,
+        message: "Invalid email format",
+      });
+      return;
+    }
+
+    try {
+      user = await prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      if (!user) {
+        res.status(404);
+        res.json({
+          status: res.statusCode,
+          message: "User not found, please register first",
+        });
+        return;
+      }
+
+      const isPasswordValid: boolean = await bcrypt.compare(
+        password,
+        user.password as string,
+      );
+
+      if (!isPasswordValid) {
+        res.status(401);
+        res.json({
+          status: res.statusCode,
+          message: "Invalid credential",
+        });
+        return;
+      }
+    } catch (error) {
+      console.error("Error during login", error);
+      res.status(500);
+      res.json({
+        status: res.statusCode,
+        message: "There is a problem during login",
+      });
+    }
     return;
   }
 
-  if (!emailRegex.test(email)) {
-    res.status(400);
-    res.json({
-      status: res.statusCode,
-      message: "Invalid email format",
-    });
+  if (!user) {
     return;
   }
 
   try {
-    const user = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
-
-    if (!user) {
-      res.status(404);
-      res.json({
-        status: res.statusCode,
-        message: "User not found, please register first",
-      });
-      return;
-    }
-
-    const isPasswordValid: boolean = await bcrypt.compare(
-      password,
-      user.password,
-    );
-
-    if (!isPasswordValid) {
-      res.status(401);
-      res.json({
-        status: res.statusCode,
-        message: "Invalid credential",
-      });
-      return;
-    }
-
     const token = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET as string,
@@ -101,7 +151,7 @@ export const loginAction = async (
       },
     });
   } catch (error) {
-    console.error("Error user login", error);
+    console.error("Error generating JWT", error);
     res.status(500);
     res.json({
       status: res.statusCode,

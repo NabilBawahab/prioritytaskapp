@@ -40,3 +40,5 @@ export async function loginAction(_: any, formData: FormData) {
     };
   }
 }
+
+export async function loginGoogleAction() {}
