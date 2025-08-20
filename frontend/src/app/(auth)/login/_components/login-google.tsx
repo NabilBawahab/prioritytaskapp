@@ -1,10 +1,6 @@
-"use client";
-
-import { useActionState } from "react";
-import { loginGoogleAction } from "../action";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export function GoogleLogin() {
-  const [_, formAction, pending] = useActionState(loginGoogleAction, null);
-  return <Button type="submit">Continue with google</Button>;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  return <Link href={`${API_URL}/continuegoogle`}>Continue with google</Link>;
 }

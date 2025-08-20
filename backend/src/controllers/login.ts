@@ -30,9 +30,9 @@ import { prisma } from "../utils/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import type { GoogleUserData } from "../type/type";
-import { User } from "@prisma/client";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const FRONTEND_URL = process.env.FE_URL;
 
 export const loginAction = async (
   req: Request,
@@ -45,13 +45,13 @@ export const loginAction = async (
     const googleUser = (req as any).user as GoogleUserData;
 
     try {
-      const isUserExisted = await prisma.user.findUnique({
+      user = await prisma.user.findUnique({
         where: {
           email: googleUser.email,
         },
       });
 
-      if (!isUserExisted) {
+      if (!user) {
         user = await prisma.user.create({
           data: {
             email: googleUser.email,
@@ -143,13 +143,21 @@ export const loginAction = async (
     );
 
     res.status(200);
-    res.json({
-      status: res.statusCode,
-      message: "Login successful",
-      data: {
-        token,
-      },
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      expires: new Date(Date.now() + 60 * 60 * 24 * 1000), // 1 day
     });
+
+    res.redirect(`${FRONTEND_URL}/auth/callback`);
+    // res.json({
+    //   status: res.statusCode,
+    //   message: "Login successful",
+    //   data: {
+    //     token,
+    //   },
+    // });
   } catch (error) {
     console.error("Error generating JWT", error);
     res.status(500);

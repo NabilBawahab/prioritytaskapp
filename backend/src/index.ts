@@ -5,10 +5,20 @@ import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./swagger";
 import { userRoute } from "./routes/user-create-task";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 const app = express();
 
 const PORT = process.env.PORT ?? 8080;
+
+const FRONTEND_URL = process.env.FE_URL;
+
+app.use(
+  cors({
+    origin: FRONTEND_URL,
+    credentials: true,
+  }),
+);
 
 app.use("/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

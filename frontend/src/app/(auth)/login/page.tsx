@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { loginAction } from "./action";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { GoogleLogin } from "./_components/login-google";
 
 export default function Page() {
   const searchParams = useSearchParams();
@@ -58,6 +59,7 @@ export default function Page() {
           <div className="text-red-600">{state?.message}</div>
         )}
       </form>
+      <GoogleLogin />
       <p className="text-sm text-center">
         Don't have an account?{" "}
         <Link href="/register" className="text-blue-500">
