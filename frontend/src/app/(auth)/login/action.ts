@@ -16,12 +16,12 @@ export async function loginAction(_: any, formData: FormData) {
       email,
       password,
     });
-    // cookieStore.set("token", res.data?.data?.token || "", {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: "lax",
-    //   expires: new Date(Date.now() + 60 * 60 * 24 * 1000), // 1 day
-    // });
+    cookieStore.set("token", res.data?.data?.token || "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      expires: new Date(Date.now() + 60 * 60 * 24 * 1000), // 1 day
+    });
 
     return {
       success: true,

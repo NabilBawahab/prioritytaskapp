@@ -32,34 +32,36 @@ export default function Page() {
           </div>
         )}
       </section>
-      <form className="flex flex-col gap-4" action={formAction}>
-        <input
-          placeholder="Input your email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          name="email"
-          className="border-slate-200 border rounded-lg px-2 py-1 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors duration-500"
-        />
-        <input
-          placeholder="Input your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          name="password"
-          className="border-slate-200 border rounded-lg px-2 py-1 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors duration-500"
-          type="password"
-        />
-        <button
-          className="rounded-xl py-2 px-4 mt-2 bg-blue-500 text-white hover:bg-blue-600 hover:cursor-pointer transition-colors duration-500 active:bg-amber-800"
-          type="submit"
-          disabled={pending}
-        >
-          Login
-        </button>
-        {!state?.success && (
-          <div className="text-red-600">{state?.message}</div>
-        )}
-      </form>
-      <GoogleLogin />
+      <section>
+        <form className="flex flex-col gap-4" action={formAction}>
+          <input
+            placeholder="Input your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            className="border-slate-200 border rounded-lg px-2 py-1 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors duration-500"
+          />
+          <input
+            placeholder="Input your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            name="password"
+            className="border-slate-200 border rounded-lg px-2 py-1 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 transition-colors duration-500"
+            type="password"
+          />
+          <button
+            className="rounded-xl py-2 px-4 mt-2 bg-blue-500 text-white hover:bg-blue-600 hover:cursor-pointer transition-colors duration-500 active:bg-amber-800"
+            type="submit"
+            disabled={pending}
+          >
+            Login
+          </button>
+          {!state?.success && (
+            <div className="text-red-600">{state?.message}</div>
+          )}
+        </form>
+        <GoogleLogin />
+      </section>
       <p className="text-sm text-center">
         Don't have an account?{" "}
         <Link href="/register" className="text-blue-500">

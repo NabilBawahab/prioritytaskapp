@@ -70,7 +70,7 @@ export const loginAction = async (
       return;
     }
   } else {
-    // Standart Login
+    // Standard Login
     const { email, password } = req.body ?? {};
 
     if (!email || !password) {
@@ -127,8 +127,8 @@ export const loginAction = async (
         status: res.statusCode,
         message: "There is a problem during login",
       });
+      return;
     }
-    return;
   }
 
   if (!user) {
@@ -142,22 +142,25 @@ export const loginAction = async (
       { expiresIn: 86400 }, // 24 hours
     );
 
-    res.status(200);
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      expires: new Date(Date.now() + 60 * 60 * 24 * 1000), // 1 day
-    });
+    if ((req as any).user) {
+      res.status(200);
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        expires: new Date(Date.now() + 60 * 60 * 24 * 1000), // 1 day
+      });
 
-    res.redirect(`${FRONTEND_URL}/auth/callback`);
-    // res.json({
-    //   status: res.statusCode,
-    //   message: "Login successful",
-    //   data: {
-    //     token,
-    //   },
-    // });
+      res.redirect(`${FRONTEND_URL}/auth/callback`);
+    } else {
+      res.json({
+        status: res.statusCode,
+        message: "Login successful",
+        data: {
+          token,
+        },
+      });
+    }
   } catch (error) {
     console.error("Error generating JWT", error);
     res.status(500);
