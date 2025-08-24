@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -9,6 +11,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+import type { ProfileResponse, Task } from "@/type/type";
 import {
   AlertCircle,
   Calendar,
@@ -18,7 +21,14 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-export default function Page() {
+export function Dashboard({
+  user,
+  tasks,
+}: {
+  user: ProfileResponse;
+  tasks: Task[];
+}) {
+  console.log(user, tasks);
   const stats = [
     {
       title: "Total Tasks",

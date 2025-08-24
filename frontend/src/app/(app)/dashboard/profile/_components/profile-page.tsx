@@ -24,6 +24,7 @@ import {
   Award,
   Settings,
   Camera,
+  User2,
 } from "lucide-react";
 import { ProfileResponse, Task } from "@/type/type";
 import { useActionState } from "react";
@@ -155,60 +156,66 @@ export default function ProfilePage({
                 Update your personal details and information
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <form>
+              <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" defaultValue="John" />
-                </div>
-                <div className="space-y-2">
+                  <Label htmlFor="firstName">Name</Label>
+                  <div className="flex">
+                    <User2 className="h-4 w-4 mt-3 mr-2 text-muted-foreground" />
+                    <Input id="name" name="name" defaultValue={user.name} />
+                  </div>
+                  {/* <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
                   <Input id="lastName" defaultValue="Doe" />
+                </div> */}
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="flex">
-                  <Mail className="h-4 w-4 mt-3 mr-2 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    defaultValue="john@example.com"
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <div className="flex">
+                    <Mail className="h-4 w-4 mt-3 mr-2 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      name="email"
+                      defaultValue={user.email}
+                      disabled
+                    />
+                  </div>
+                </div>
+
+                {/* <div className="space-y-2">
+                  <Label htmlFor="phone">Phone</Label>
+                  <div className="flex">
+                    <Phone className="h-4 w-4 mt-3 mr-2 text-muted-foreground" />
+                    <Input id="phone" defaultValue="+1 (555) 123-4567" />
+                  </div>
+                </div> */}
+
+                {/* <div className="space-y-2">
+                  <Label htmlFor="location">Location</Label>
+                  <div className="flex">
+                    <MapPin className="h-4 w-4 mt-3 mr-2 text-muted-foreground" />
+                    <Input id="location" defaultValue="San Francisco, CA" />
+                  </div>
+                </div> */}
+
+                <div className="space-y-2">
+                  <Label htmlFor="bio">Bio</Label>
+                  <Textarea
+                    id="bio"
+                    placeholder="Tell us about yourself..."
+                    name="bio"
+                    defaultValue={user.bio}
                   />
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <div className="flex">
-                  <Phone className="h-4 w-4 mt-3 mr-2 text-muted-foreground" />
-                  <Input id="phone" defaultValue="+1 (555) 123-4567" />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
-                <div className="flex">
-                  <MapPin className="h-4 w-4 mt-3 mr-2 text-muted-foreground" />
-                  <Input id="location" defaultValue="San Francisco, CA" />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea
-                  id="bio"
-                  placeholder="Tell us about yourself..."
-                  defaultValue="Passionate product manager with 5+ years of experience in building user-centric solutions."
-                />
-              </div>
-
-              <Button className="w-full">
-                <Settings className="h-4 w-4 mr-2" />
-                Update Profile
-              </Button>
-            </CardContent>
+                <Button className="w-full">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Update Profile
+                </Button>
+              </CardContent>
+            </form>
           </Card>
 
           {/* Achievements */}

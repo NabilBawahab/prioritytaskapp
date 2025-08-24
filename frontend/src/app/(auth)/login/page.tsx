@@ -56,11 +56,11 @@ export default function Page() {
           >
             Login
           </button>
-          {!state?.success && (
-            <div className="text-red-600">{state?.message}</div>
-          )}
         </form>
         <GoogleLogin />
+        {!state?.success && (
+          <div className="text-red-600">{state?.message}</div>
+        )}
       </section>
       <p className="text-sm text-center">
         Don't have an account?{" "}
