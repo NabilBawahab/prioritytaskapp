@@ -27,8 +27,9 @@ import {
   User2,
 } from "lucide-react";
 import { ProfileResponse, Task } from "@/type/type";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { editProfileAction } from "../action";
+import { useRouter } from "next/navigation";
 
 const now = new Date();
 
@@ -41,6 +42,13 @@ export default function ProfilePage({
 }) {
   const [state, formAction, pending] = useActionState(editProfileAction, null);
 
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.success) {
+      router.refresh();
+    }
+  }, [state]);
   const achievements = [
     { title: "Task Master", description: "Completed 100+ tasks", icon: "🏆" },
     {
@@ -156,7 +164,7 @@ export default function ProfilePage({
                 Update your personal details and information
               </CardDescription>
             </CardHeader>
-            <form>
+            <form action={formAction}>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">Name</Label>
