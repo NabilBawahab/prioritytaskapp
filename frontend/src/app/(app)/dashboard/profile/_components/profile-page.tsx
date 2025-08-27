@@ -293,11 +293,11 @@ export default function ProfilePage({
                   <div className="flex-1">
                     <p className="text-sm">
                       {task.status === "DONE"
-                        ? `Completed task ${task.title}`
+                        ? `Completed task '${task.title}'`
                         : task.status === "TODO"
-                        ? `Created new task ${task.title}`
+                        ? `Created new task '${task.title}'`
                         : task.status === "IN_PROGRESS" &&
-                          `Working on a task ${task.title}`}
+                          `Working on a task '${task.title}'`}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {formatDistanceToNow(new Date(task.updatedAt), {
