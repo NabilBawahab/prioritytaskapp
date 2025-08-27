@@ -28,7 +28,6 @@ export function Dashboard({
   user: ProfileResponse;
   tasks: Task[];
 }) {
-  console.log(user, tasks);
   const stats = [
     {
       title: "Total Tasks",

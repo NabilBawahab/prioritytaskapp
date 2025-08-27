@@ -18,8 +18,6 @@ import { Separator } from "@/components/ui/separator";
 import {
   User,
   Mail,
-  Phone,
-  MapPin,
   Calendar,
   Award,
   Settings,
@@ -30,6 +28,7 @@ import { ProfileResponse, Task } from "@/type/type";
 import { useActionState, useEffect } from "react";
 import { editProfileAction } from "../action";
 import { useRouter } from "next/navigation";
+import { formatDistanceToNow } from "date-fns";
 
 const now = new Date();
 
@@ -43,6 +42,16 @@ export default function ProfilePage({
   const [state, formAction, pending] = useActionState(editProfileAction, null);
 
   const router = useRouter();
+  console.log(tasks);
+
+  const sortedTasks = tasks.sort((a, b) => {
+    const miliSecondA = new Date(a.updatedAt).getTime();
+    const milisecondB = new Date(b.updatedAt).getTime();
+
+    const updateTimeDiff = milisecondB - miliSecondA;
+
+    return updateTimeDiff;
+  });
 
   useEffect(() => {
     if (state?.success) {
@@ -267,7 +276,38 @@ export default function ProfilePage({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {[
+              {sortedTasks.map((task, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 pb-3 border-b last:border-b-0"
+                >
+                  <div
+                    className={`h-2 w-2 rounded-full ${
+                      task.status === "DONE"
+                        ? "bg-green-500"
+                        : task.status === "TODO"
+                        ? "bg-blue-500"
+                        : task.status === "IN_PROGRESS" && "bg-yellow-500"
+                    }`}
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm">
+                      {task.status === "DONE"
+                        ? `Completed task ${task.title}`
+                        : task.status === "TODO"
+                        ? `Created new task ${task.title}`
+                        : task.status === "IN_PROGRESS" &&
+                          `Working on a task ${task.title}`}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatDistanceToNow(new Date(task.updatedAt), {
+                        addSuffix: true,
+                      })}
+                    </p>
+                  </div>
+                </div>
+              ))}
+              {/*[
                 {
                   action: "Completed task 'Design new landing page'",
                   time: "2 hours ago",
@@ -311,7 +351,7 @@ export default function ProfilePage({
                     </p>
                   </div>
                 </div>
-              ))}
+              )) */}
             </div>
           </CardContent>
         </Card>
