@@ -227,7 +227,7 @@ export default function ProfilePage({
                   />
                 </div>
 
-                <Button className="w-full">
+                <Button className="w-full hover:cursor-pointer">
                   <Settings className="h-4 w-4 mr-2" />
                   Update Profile
                 </Button>
