@@ -21,6 +21,8 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+const now = new Date();
+
 export function Dashboard({
   user,
   tasks,
@@ -31,7 +33,7 @@ export function Dashboard({
   const stats = [
     {
       title: "Total Tasks",
-      value: "24",
+      value: tasks.length,
       description: "All time tasks created",
       icon: Target,
       color: "text-blue-600",
@@ -39,7 +41,7 @@ export function Dashboard({
     },
     {
       title: "Completed",
-      value: "18",
+      value: tasks.filter((task) => task.status === "DONE").length,
       description: "Tasks finished",
       icon: CheckCircle,
       color: "text-green-600",
@@ -47,7 +49,9 @@ export function Dashboard({
     },
     {
       title: "In Progress",
-      value: "4",
+      value: tasks.filter(
+        (task) => task.status === "IN_PROGRESS" || task.status === "TODO",
+      ).length,
       description: "Currently working on",
       icon: Clock,
       color: "text-yellow-600",
@@ -55,7 +59,9 @@ export function Dashboard({
     },
     {
       title: "Overdue",
-      value: "2",
+      value: tasks.filter(
+        (task) => task.status !== "DONE" && new Date(task.dueDate) < now,
+      ).length,
       description: "Need attention",
       icon: AlertCircle,
       color: "text-red-600",

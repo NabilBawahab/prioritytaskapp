@@ -236,7 +236,7 @@ export default function ProfilePage({
           </Card>
 
           {/* Achievements */}
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Award className="h-5 w-5" />
@@ -262,7 +262,7 @@ export default function ProfilePage({
                 </div>
               ))}
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
 
         {/* Activity Timeline */}
