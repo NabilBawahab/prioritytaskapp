@@ -69,6 +69,39 @@ export function Dashboard({
     },
   ];
 
+  const completedTasks =
+    (tasks.filter((task) => task.status === "DONE").length / tasks.length) *
+    100;
+
+  const todayTasks = tasks.filter((task) => {
+    const taskDueDate = new Date(task.dueDate);
+    const tasks =
+      taskDueDate.getFullYear() === now.getFullYear() &&
+      taskDueDate.getMonth() === now.getMonth() &&
+      taskDueDate.getDate() === now.getDate();
+    return tasks;
+  });
+
+  const getStatusColor = (priority: string) => {
+    switch (priority) {
+      case "FIRST":
+        return "bg-red-500";
+      case "SECOND":
+        return "bg-orange-500";
+      case "THIRD":
+        return "bg-yellow-500";
+      default:
+        return "bg-white";
+    }
+  };
+
+  const sortedTasks = tasks.sort((a, b) => {
+    const dateSort =
+      new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+
+    return dateSort;
+  });
+
   const recentTasks = [
     {
       id: 1,
@@ -112,7 +145,7 @@ export function Dashboard({
         {/* Welcome Section */}
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">
-            Welcome back, John! 👋
+            Welcome back, {user.name} 👋
           </h2>
           <p className="text-muted-foreground">
             Here's what's happening with your tasks today.
@@ -147,27 +180,25 @@ export function Dashboard({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5" />
-                Weekly Progress
+                Progress
               </CardTitle>
-              <CardDescription>
-                Your task completion rate this week
-              </CardDescription>
+              <CardDescription>Your task completion rate</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Completed Tasks</span>
-                  <span>75%</span>
+                  <span>{completedTasks.toFixed(2)} %</span>
                 </div>
-                <Progress value={75} className="h-2" />
+                <Progress value={completedTasks} className="h-2" />
               </div>
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Weekly Goal</span>
                   <span>18/20</span>
                 </div>
                 <Progress value={90} className="h-2" />
-              </div>
+              </div> */}
             </CardContent>
           </Card>
 
@@ -180,19 +211,51 @@ export function Dashboard({
               <CardDescription>Tasks scheduled for today</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
+              <div className="space-y-3 md:grid md:grid-cols-2">
+                {todayTasks.map((task) => (
+                  <div key={task.id} className="flex gap-3">
+                    <div
+                      className={`h-2 w-2 rounded-full ${getStatusColor(
+                        task.priority,
+                      )} mt-0.5`}
+                    />
+                    <div>
+                      <p className="italic text-slate-500 text-[8px]">task</p>
+                      <span className="text-sm">{task.title}</span>
+                      <p className="italic text-slate-500 text-[8px]">
+                        due date
+                      </p>
+                      <span className="text-sm">
+                        {new Date(task.dueDate).toLocaleDateString("en-US", {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </span>
+                      <p className="italic text-slate-500 text-[8px]">
+                        priority
+                      </p>
+                      <span className="text-sm">{`${task.priority.charAt(
+                        0,
+                      )}${task.priority
+                        .slice(1)
+                        .toLowerCase()} Priority`}</span>
+                    </div>
+                  </div>
+                ))}
+
+                {/* <div className="flex items-center gap-3">
                   <div className="h-2 w-2 rounded-full bg-green-500" />
                   <span className="text-sm">Morning standup - 9:00 AM</span>
-                </div>
-                <div className="flex items-center gap-3">
+                </div> */}
+                {/* <div className="flex items-center gap-3">
                   <div className="h-2 w-2 rounded-full bg-yellow-500" />
                   <span className="text-sm">Code review - 2:00 PM</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="h-2 w-2 rounded-full bg-blue-500" />
                   <span className="text-sm">Client call - 4:00 PM</span>
-                </div>
+                </div> */}
               </div>
             </CardContent>
           </Card>
@@ -206,7 +269,7 @@ export function Dashboard({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentTasks.map((task) => (
+              {sortedTasks.map((task) => (
                 <div
                   key={task.id}
                   className="flex items-center justify-between p-3 rounded-lg border"
@@ -214,9 +277,10 @@ export function Dashboard({
                   <div className="flex items-center gap-3">
                     <div
                       className={`h-3 w-3 rounded-full ${
-                        task.status === "completed"
+                        task.status === "DONE"
                           ? "bg-green-500"
-                          : task.status === "in-progress"
+                          : task.status === "IN_PROGRESS" ||
+                            task.status === "TODO"
                           ? "bg-yellow-500"
                           : "bg-gray-400"
                       }`}
@@ -224,16 +288,21 @@ export function Dashboard({
                     <div>
                       <p className="font-medium">{task.title}</p>
                       <p className="text-sm text-muted-foreground">
-                        Due: {task.dueDate}
+                        Due:{" "}
+                        {new Date(task.dueDate).toLocaleDateString("en-US", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge
                       variant={
-                        task.priority === "high"
+                        task.priority === "FIRST"
                           ? "destructive"
-                          : task.priority === "medium"
+                          : task.priority === "SECOND"
                           ? "default"
                           : "secondary"
                       }
