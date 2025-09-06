@@ -339,6 +339,7 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
         </div>
 
         {/* Task List */}
+        <div id="taskslist" />
         <Card>
           <CardHeader>
             <CardTitle>Tasks ({filteredTasks.length})</CardTitle>

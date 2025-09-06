@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { startTransition, useActionState, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -43,6 +43,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CreateTaskInput } from "@/type/type";
 import { createTaskAction } from "../action";
+import { useRouter } from "next/navigation";
 
 export function CreateTask() {
   const [multipleTask, setMultipleTask] = useState(false);
@@ -60,6 +61,7 @@ export function CreateTask() {
     undefined,
   );
 
+  const router = useRouter();
   const handleAddTask = () => {
     setTasks([
       ...tasks,
@@ -102,6 +104,11 @@ export function CreateTask() {
     });
   };
 
+  useEffect(() => {
+    if (state?.success) {
+      router.push("/dashboard/tasks#taskslist");
+    }
+  }, [state, router]);
   return (
     <SidebarInset>
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
@@ -270,6 +277,7 @@ export function CreateTask() {
               type="button"
               className="flex-1 hover:cursor-pointer"
               onClick={handleSubmit}
+              disabled={pending}
             >
               <CheckCircle className="h-4 w-4 mr-2" />
               Create Task
@@ -279,6 +287,7 @@ export function CreateTask() {
               variant="outline"
               className="hover:cursor-pointer"
               onClick={handleAddTask}
+              disabled={pending}
             >
               <FilePlus />
               Add more Task
