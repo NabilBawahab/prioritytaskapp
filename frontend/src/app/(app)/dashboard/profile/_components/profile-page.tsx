@@ -42,7 +42,6 @@ export default function ProfilePage({
   const [state, formAction, pending] = useActionState(editProfileAction, null);
 
   const router = useRouter();
-  console.log(tasks);
 
   const sortedTasks = tasks.sort((a, b) => {
     const miliSecondA = new Date(a.updatedAt).getTime();
@@ -52,6 +51,8 @@ export default function ProfilePage({
 
     return updateTimeDiff;
   });
+
+  const slicedTasks = sortedTasks.slice(0, 10);
 
   useEffect(() => {
     if (state?.success) {
@@ -276,7 +277,7 @@ export default function ProfilePage({
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {sortedTasks.map((task, index) => (
+              {slicedTasks.map((task, index) => (
                 <div
                   key={index}
                   className="flex items-center gap-3 pb-3 border-b last:border-b-0"
