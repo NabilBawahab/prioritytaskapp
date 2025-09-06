@@ -510,6 +510,7 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
                       if (currentPage > 1) {
                         setCurrentPage(currentPage - 1);
                       }
+                      return;
                     }}
                   />
                 </PaginationItem>
@@ -531,6 +532,7 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
                       if (currentPage !== totalPage) {
                         setCurrentPage(currentPage + 1);
                       }
+                      return;
                     }}
                   />
                 </PaginationItem>

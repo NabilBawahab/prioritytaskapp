@@ -8,6 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
@@ -20,6 +28,7 @@ import {
   Target,
   TrendingUp,
 } from "lucide-react";
+import { useState } from "react";
 
 const now = new Date();
 
@@ -30,6 +39,12 @@ export function Dashboard({
   user: ProfileResponse;
   tasks: Task[];
 }) {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const itemPerPage = 10;
+
+  const totalPage = Math.ceil(tasks.length / itemPerPage);
+
   const stats = [
     {
       title: "Total Tasks",
@@ -69,9 +84,7 @@ export function Dashboard({
     },
   ];
 
-  const completedTasks =
-    (tasks.filter((task) => task.status === "DONE").length / tasks.length) *
-    100;
+  const completedTasks = tasks.filter((task) => task.status === "DONE");
 
   const todayTasks = tasks.filter((task) => {
     const taskDueDate = new Date(task.dueDate);
@@ -97,41 +110,46 @@ export function Dashboard({
 
   const sortedTasks = tasks.sort((a, b) => {
     const dateSort =
-      new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
 
     return dateSort;
   });
 
-  const recentTasks = [
-    {
-      id: 1,
-      title: "Design new landing page",
-      status: "completed",
-      priority: "high",
-      dueDate: "2024-01-15",
-    },
-    {
-      id: 2,
-      title: "Review code changes",
-      status: "in-progress",
-      priority: "medium",
-      dueDate: "2024-01-16",
-    },
-    {
-      id: 3,
-      title: "Update documentation",
-      status: "pending",
-      priority: "low",
-      dueDate: "2024-01-17",
-    },
-    {
-      id: 4,
-      title: "Client meeting preparation",
-      status: "in-progress",
-      priority: "high",
-      dueDate: "2024-01-18",
-    },
-  ];
+  const paginatedTasks = sortedTasks.slice(
+    (currentPage - 1) * itemPerPage,
+    currentPage * itemPerPage,
+  );
+
+  // const recentTasks = [
+  //   {
+  //     id: 1,
+  //     title: "Design new landing page",
+  //     status: "completed",
+  //     priority: "high",
+  //     dueDate: "2024-01-15",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Review code changes",
+  //     status: "in-progress",
+  //     priority: "medium",
+  //     dueDate: "2024-01-16",
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "Update documentation",
+  //     status: "pending",
+  //     priority: "low",
+  //     dueDate: "2024-01-17",
+  //   },
+  //   {
+  //     id: 4,
+  //     title: "Client meeting preparation",
+  //     status: "in-progress",
+  //     priority: "high",
+  //     dueDate: "2024-01-18",
+  //   },
+  // ];
 
   return (
     <SidebarInset>
@@ -188,9 +206,20 @@ export function Dashboard({
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Completed Tasks</span>
-                  <span>{completedTasks.toFixed(2)} %</span>
+                  <div className="space-x-4">
+                    <span>{completedTasks.length + "/" + tasks.length}</span>
+                    <span>
+                      {((completedTasks.length / tasks.length) * 100).toFixed(
+                        2,
+                      )}{" "}
+                      %
+                    </span>
+                  </div>
                 </div>
-                <Progress value={completedTasks} className="h-2" />
+                <Progress
+                  value={(completedTasks.length / tasks.length) * 100}
+                  className="h-2"
+                />
               </div>
               {/* <div className="space-y-2">
                 <div className="flex justify-between text-sm">
@@ -267,9 +296,9 @@ export function Dashboard({
             <CardTitle>Recent Tasks</CardTitle>
             <CardDescription>Your latest task activities</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="space-y-4">
-              {sortedTasks.map((task) => (
+              {paginatedTasks.map((task) => (
                 <div
                   key={task.id}
                   className="flex items-center justify-between p-3 rounded-lg border"
@@ -314,6 +343,42 @@ export function Dashboard({
                 </div>
               ))}
             </div>
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem className="hover:cursor-pointer">
+                  <PaginationPrevious
+                    onClick={() => {
+                      if (currentPage > 1) {
+                        setCurrentPage(currentPage - 1);
+                      }
+                      return;
+                    }}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPage }).map((_, i) => {
+                  return (
+                    <PaginationItem key={i} className="hover:cursor-pointer">
+                      <PaginationLink
+                        isActive={currentPage === i + 1}
+                        onClick={() => setCurrentPage(i + 1)}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+                <PaginationItem className="hover:cursor-pointer">
+                  <PaginationNext
+                    onClick={() => {
+                      if (currentPage !== totalPage) {
+                        setCurrentPage(currentPage + 1);
+                      }
+                      return;
+                    }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </CardContent>
         </Card>
       </div>
