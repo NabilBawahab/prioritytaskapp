@@ -2,7 +2,7 @@ import express from "express";
 import { registerAction } from "../controllers/register";
 import { loginAction } from "../controllers/login";
 import { googleLoginAction } from "../controllers/oauth-login";
-import { googleAuthCallback } from "../controllers/google-oauth-callback";
+import { googleAuthCallback } from "../middleware/google-oauth-callback";
 
 export const authenticationRoute = express.Router();
 

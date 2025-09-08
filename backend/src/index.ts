@@ -6,6 +6,7 @@ import { swaggerSpec } from "./swagger";
 import { userRoute } from "./routes/user-create-task";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { aiRoute } from "./routes/ai-chatbot";
 
 const app = express();
 
@@ -32,6 +33,8 @@ app.use(cookieParser());
 app.use("/", authenticationRoute);
 
 app.use("/user", userRoute);
+
+app.use("/ai", aiRoute);
 
 app.get("/ping", (_, res: Response) => {
   res.send("pong");
