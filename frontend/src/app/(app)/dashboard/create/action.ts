@@ -33,10 +33,24 @@ export async function createTaskAction(_: any, formData: FormData) {
     return { success: false, message: "All field must be filled" };
   }
 
+  const capitalizedTasks = tasks.map((task) => {
+    const capitalize = (str: string) => {
+      return str.trim().charAt(0).toUpperCase() + str.trim().slice(1);
+    };
+
+    const capitalized = {
+      ...task,
+      title: capitalize(task.title),
+      description: capitalize(task.description),
+    };
+
+    return capitalized;
+  });
+
   try {
     const res: AxiosResponse<GeneralAPISuccessResponse> = await api.post(
       "/user/create",
-      tasks.map((task) => {
+      capitalizedTasks.map((task) => {
         return {
           ...task,
           dueDate: new Date(task.dueDate).toISOString(),
